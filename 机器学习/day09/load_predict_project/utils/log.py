@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
-import datetime
-
-import pandas as pd
-
-
-# from datetime import datetime
 
 
 class Logger(object):
@@ -50,32 +44,3 @@ class Logger(object):
         self.logger.addHandler(rotate_handler)
 
         return self.logger
-
-
-# 测试日志功能.
-if __name__ == '__main__':
-    # 1. 创建日志对象.
-    # 参1: 日志文件的父目录.  参2: 日志文件名
-    logger = Logger('../', 'hg_test').get_logger()
-
-    # 2. 往日志文件中写数据.
-    logger.info('我是普通的日志信息')        # 这个会被写到 hg.test日志文件中.
-    logger.error('我是错误的日志信息')       # 日志默认是追加, 不是覆盖.
-
-    # 3. 演示下错误信息, 写入日志
-    try:
-        logger.info('开始计算了...')
-        print(10 / 0)
-    except Exception as e:
-        logger.error(f'计算出错了, 原因是: {e}')
-    else:
-        logger.info('计算成功!')
-    finally:
-        logger.info('计算结束!')
-
-    # 4. 生成 train_年月日.log 日志文件.
-    print(datetime.datetime.now())      # 获取当前时间.
-    print(pd.to_datetime(datetime.datetime.now()).strftime('%Y%m%d%H%M%S'))
-
-    new_name = 'train_' + pd.to_datetime(datetime.datetime.now()).strftime('%Y%m%d%H%M%S') + '.log'
-    print(new_name)
