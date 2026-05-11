@@ -1,8 +1,8 @@
 """
 Queue
 """
-
-from multiprocessing import Queue
+import time
+from multiprocessing import Queue, Process
 
 q1 = Queue(3)
 
@@ -31,3 +31,23 @@ q1.put(20)
 q1.put(30)
 # put_nowait: 向队列中添加数据,如果队列已满,则添加失败
 q1.put_nowait(40)
+
+
+def test(queue):
+    queue.put('故垒西边，人道是三国周郎赤壁')
+    while not queue.empty():
+        print(queue.get())
+
+
+if __name__ == '__main__':
+    q1 = Queue(2)
+    q1.put('大江东去浪淘尽')
+    q1.put('千古风流人物')
+    print(q1.full())
+
+    p = Process(target=test, args=(q1,))
+    p.start()
+
+    time.sleep(3)
+
+    print(f'主进程取出一个元素：{q1.get()}')
