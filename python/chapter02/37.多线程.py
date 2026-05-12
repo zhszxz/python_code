@@ -20,13 +20,45 @@ def music(lock):
         time.sleep(1)
 
 
+"""
+继承Thread实现多线程
+"""
+
+
+class CodingThread(Thread):
+    def __init__(self, lock, **kwargs):
+        super().__init__(**kwargs)
+        self.lock = lock
+
+    def run(self):
+        for i in range(5):
+            with self.lock:
+                print(f"我正在敲代码{i},进程id：{os.getpid()},线程id：{get_native_id()}")
+            time.sleep(1)
+
+
+class MusicThread(Thread):
+    def __init__(self, lock, **kwargs):
+        super().__init__(**kwargs)
+        self.lock = lock
+
+    def run(self):
+        for i in range(5):
+            with self.lock:
+                print(f"我正在听音乐{i},进程id：{os.getpid()},线程id：{get_native_id()}")
+            time.sleep(1)
+
+
 if __name__ == '__main__':
     print(f"主进程开始了... 进程id:[{os.getpid()}]，线程id:[{get_native_id()}]")
 
     lock = RLock()
 
-    p1 = Thread(target=coding, args=(lock,))
-    p2 = Thread(target=music, args=(lock,))
+    # p1 = Thread(target=coding, args=(lock,))
+    # p2 = Thread(target=music, args=(lock,))
+
+    p1 = CodingThread(lock)
+    p2 = MusicThread(lock)
 
     p1.start()
     p2.start()
