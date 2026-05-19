@@ -27,7 +27,6 @@ class UserInfoResponse(UserInfoBase):
     )
 
 
-# data 数据类型
 class UserAuthResponse(BaseModel):
     token: str
     user_info: UserInfoResponse = Field(..., alias="userInfo")
@@ -36,3 +35,16 @@ class UserAuthResponse(BaseModel):
         populate_by_name=True,
         from_attributes=True
     )
+
+
+class UserUpdateRequest(BaseModel):
+    nickname: str = None
+    avatar: str = None
+    gender: str = None
+    bio: str = None
+    phone: str = None
+
+
+class UserChangePasswordRequest(BaseModel):
+    old_password: str = Field(..., alias="oldPassword", description="旧密码")
+    new_password: str = Field(..., min_length=6, alias="newPassword", description="新密码")

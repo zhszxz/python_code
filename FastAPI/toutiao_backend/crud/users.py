@@ -4,11 +4,12 @@
 import uuid
 from datetime import datetime, timedelta
 
-from sqlalchemy import select
+from fastapi import HTTPException
+from sqlalchemy import select, Update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models.users import User, UserToken
-from schemas.users import UserRequest
+from schemas.users import UserRequest, UserUpdateRequest
 from utils import security
 
 
@@ -70,3 +71,23 @@ async def get_user_by_token(db: AsyncSession, token: str):
     query = select(User).where(User.id == db_token.user_id)
     result = await db.execute(query)
     return result.scalar_one_or_none()
+
+
+# 更新用户
+async def update_user(db: AsyncSession, username: str, user_data: UserUpdateRequest):
+    result = await  db.execute(Update(User).where(User.username == username).values(
+        **user_data.model_dump(exclude_unset=True, exclude_none=True)))
+    await db.commit()
+    if result.rowcount == 0:
+        raise HTTPException(status_code=404, detail="用户不存在")
+    return await get_user_by_username(db, username)
+
+
+# 修改密码
+async def change_password(db: AsyncSession, user: User, old_password: str, new_password: str):
+    if not security.verify_password(old_password, user.password):
+        return False
+    user.password = security.get_hash_password(new_password)
+    db.add(user)
+    await db.commit()
+    return True
